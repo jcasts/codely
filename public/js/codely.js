@@ -40,8 +40,9 @@ Codely.ScriptReader = {
 
   errors: [],
 
-  setup: function(elmt){
+  setup: function(elmt, callback){
     Codely.FileDrop.setup(elmt, Codely.ScriptReader.readFile);
+    elmt.onscript = callback;
   },
 
   readFile: function(elmt, file){
@@ -59,6 +60,9 @@ Codely.ScriptReader = {
       var reader = new FileReader();
       reader.onload = function(ev){
         elmt.value = ev.target.result;
+        elmt.change();
+        elmt.focus();
+        if(elmt.onscript) elmt.onscript(file);
       }
 
       reader.readAsText(file);
@@ -66,10 +70,8 @@ Codely.ScriptReader = {
   }
 }
 
-elmts = document.getElementsByClassName("script_drop");
-for(var i=0; i<elmts.length; i++){
-  Codely.ScriptReader.setup(elmts[i]);
-}
+elmt = document.getElementById("scriptarea");
+Codely.ScriptReader.setup(elmt);
 
 //Prevent textarea tabs
 $("textarea").keydown(function(e) {
@@ -93,4 +95,16 @@ $("textarea").keydown(function(e) {
     // prevent the focus lose
     e.preventDefault();
   }
+});
+
+defaultText = "Write code here or drag-n-drop a file..."
+scriptarea = $("#scriptarea")
+scriptarea.attr("value", defaultText);
+
+scriptarea.focus(function(e){
+  if(this.value === defaultText) this.value = "";
+});
+
+scriptarea.blur(function(e){
+  if(!this.value) this.value = defaultText;
 });
