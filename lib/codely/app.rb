@@ -55,6 +55,13 @@ class Codely::App < Sinatra::Application
   end
 
 
+  # Get a the language for a filename
+  post '/lang' do
+    lang = Linguist::Language.find_by_filename(params[:filename]).first
+    lang ? lang.name : ""
+  end
+
+
   # Retrieve an existing paste by id.
   get '/:id' do
     @paste = Codely::Paste.get params[:id]
