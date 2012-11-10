@@ -3,6 +3,7 @@ textarea.highlight {
   width: 100%;
   max-width: 100%;
   min-height: 400px;
+  max-height: 100%;
 }
 
 pre, textarea.highlight  {

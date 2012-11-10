@@ -70,3 +70,27 @@ elmts = document.getElementsByClassName("script_drop");
 for(var i=0; i<elmts.length; i++){
   Codely.ScriptReader.setup(elmts[i]);
 }
+
+//Prevent textarea tabs
+$("textarea").keydown(function(e) {
+  if(e.keyCode === 9) { // tab was pressed
+    // get caret position/selection
+    var start = this.selectionStart;
+    var end = this.selectionEnd;
+    var tab = ((start-1) % 2 === 0) ? "  " : " ";
+
+    var $this = $(this);
+    var value = $this.val();
+
+    // set textarea value to: text before caret + tab + text after caret
+    $this.val(value.substring(0, start)
+                + tab
+                + value.substring(end));
+
+    // put caret at right position again (add one for the tab)
+    this.selectionStart = this.selectionEnd = start + tab.length;
+
+    // prevent the focus lose
+    e.preventDefault();
+  }
+});
