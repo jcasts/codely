@@ -1,0 +1,28 @@
+textarea.highlight {
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  width: 100%;
+  max-width: 100%;
+  min-height: 400px;
+}
+
+pre, textarea.highlight  {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+ol.linenums {
+  list-style-position:inside;
+  padding: 0;
+  float: left;
+  line-height: 0px;
+  margin: 0px;
+  margin-right: 10px;
+  border-right: 1px solid grey;
+  position: relative;
+}
+
+ol li {
+  margin-right: -2px;
+  text-align: right;
+  line-height: 18px;
+}

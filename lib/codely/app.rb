@@ -138,7 +138,7 @@ class Codely::App < Sinatra::Application
 
   def theme_css
     return unless @paste
-    "<link href=\"/css/#{h(@paste.theme)}.css\" />"
+    "<link href=\"/css/themes/#{h(@paste.theme)}.css\" />"
   end
 
 

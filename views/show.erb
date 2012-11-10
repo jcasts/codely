@@ -1,1 +1,8 @@
+<div class="highlight">
+<pre>
+<ol class="linenums">
+<%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
+</ol>
 <%= @paste.html %>
+</pre>
+</div>

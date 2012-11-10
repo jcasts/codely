@@ -1,17 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= title %></title>
+    <link rel="stylesheet" type="text/css" href="css/themes/default.css" />
     <%= theme_css %>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/codely.css" />
+    <script src="/js/jquery-1.8.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
   </head>
 
   <body>
-    <div class="canvas">
-      <h1>Codely</h1>
-
-      <div class="content">
-        <%= yield %>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">Codely</a>
+        </div>
       </div>
     </div>
+
+    <div class="container" style="margin-top: 50px">
+      <%= yield %>
+    </div>
+    <script src="/js/codely.js"></script>
   </body>
 </html>
