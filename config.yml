@@ -1,0 +1,21 @@
+client:
+  default:
+    host: localhost     # Default host to connect to
+    port: 70741         # Default port to connect to
+
+server:
+  port:     70741       # Port to run the server on
+  instances:    4       # Number of server instances to run.
+
+  # Multiply the below options by the number of instances for total counts.
+  connections: 50       # Number of connections allowed to server
+  threads:     10       # Number of threads for the process
+
+db:
+  adapter:  mysql       # Type of database: mysql, sqlite, or postgres
+  database: codely      # Database name (path to flat-file for sqlite)
+
+  # The options below are not applicable to sqlite.
+  host:     localhost   # Host where the database is running
+  username: mysql       # Database username
+  password: :prompt     # Database password - :prompt asks on startup

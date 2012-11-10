@@ -1,0 +1,8 @@
+.autotest
+History.rdoc
+Manifest.txt
+README.rdoc
+Rakefile
+bin/codely
+lib/codely.rb
+test/test_codely.rb
