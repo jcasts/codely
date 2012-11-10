@@ -16,6 +16,7 @@ class Codely::Paste
   property :theme,      String, :default => 'default'
   property :created_at, Time,   :required => true
   property :updated_at, Time,   :required => true
+  property :viewed_at,  Time,   :required => true
   property :lang,       String, :required => true, :default => "Plain Text"
   property :md5,        String, :required => true
   property :data,       Text,   :required => true
@@ -25,6 +26,7 @@ class Codely::Paste
 
   before :create do |paste|
     paste.created_at = Time.now
+    paste.viewed_at  = Time.now
   end
 
 

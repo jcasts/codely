@@ -67,6 +67,7 @@ class Codely::App < Sinatra::Application
     @paste = Codely::Paste.get params[:id]
     render_out 404, :not_found unless @paste
 
+    @paste.update :viewed_at => Time.now
     @title = "View #{@paste.id}"
     render_out @paste
   end
@@ -119,11 +120,11 @@ class Codely::App < Sinatra::Application
     @attribs = {}
 
     PASTE_ATTR.each do |key|
-      @attribs[key] = params[key] if params[key]
+      @attribs[key] = params[key] if params[key] && !params[key].empty?
     end
 
     if Hash === params[:file] && params[:file][:tempfile].respond_to?(:read)
-      @attribs[:data]       = params[:file][:tempfile].read.strip
+      @attribs[:data]     ||= params[:file][:tempfile].read.strip
       @attribs[:filename] ||= params[:file][:filename]
 
     elsif !@attribs[:data] && !@attribs.empty?
