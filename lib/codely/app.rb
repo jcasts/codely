@@ -65,6 +65,16 @@ class Codely::App < Sinatra::Application
   end
 
 
+  # Paste edit page by id.
+  get '/:id/edit' do
+    @paste = Codely::Paste.get params[:id]
+    render_out 404, :not_found unless @paste
+
+    @title = "Edit #{@paste.id}"
+    render_out :edit
+  end
+
+
   # Update an existing paste by id.
   post '/:id' do
     @paste = Codely::Paste.get params[:id]
@@ -125,28 +135,6 @@ class Codely::App < Sinatra::Application
   end
 
 
-  def title
-    sub = " - #{@title}" if @title
-    "Codely#{sub}"
-  end
-
-
-  def h value
-    CGI.escapeHTML value
-  end
-
-
-  def theme_css
-    return unless @paste
-    "<link href=\"/css/themes/#{h(@paste.theme)}.css\" />"
-  end
-
-
-  def languages
-    Codely::Paste::LANGUAGES
-  end
-
-
   # Retrieve the appropriate body string for the given target.
   def body_for target
     case target
@@ -188,5 +176,47 @@ class Codely::App < Sinatra::Application
 
     new_args = [code, headers, body].compact
     halt(*new_args)
+  end
+
+
+  ##
+  # View Helpers
+  ##
+
+
+  def title
+    sub = " - #{@title}" if @title
+    "Codely#{sub}"
+  end
+
+
+  def h value
+    CGI.escapeHTML value
+  end
+
+
+  def theme_css
+    return unless @paste
+    "<link href=\"/css/themes/#{h(@paste.theme)}.css\" />"
+  end
+
+
+  def paste_id
+    @paste.id if @paste
+  end
+
+
+  def languages
+    Codely::Paste::LANGUAGES
+  end
+
+
+  def curr_data
+    @paste.data if @paste
+  end
+
+
+  def curr_lang
+    @paste ? @paste.lang : @default_lang
   end
 end

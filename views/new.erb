@@ -3,20 +3,4 @@
    You can also drag and drop in the text area (modern browsers only).
 </p>
 
-<form action="/" method="POST">
-  <textarea id="scriptarea" name="data" class="highlight script_drop" placeholder="Write code here or drag-n-drop a file...">
-</textarea>
-
-  <div style="float: right; position: relative; right: -15px">
-  <select name="lang">
-    <option value="">Plain Text</option>
-    <option value='-' disabled>-----</option>
-  <% languages.each do |lang| %>
-    <option value="<%= lang %>"<%= " selected" if lang == @default_lang %>>
-      <%=lang%>
-    </option>
-  <% end %>
-  </select>
-  <button type="submit" class="btn btn-primary">Submit</button>
-  </div>
-</form>
+<%= erb(:_scriptarea) %>
