@@ -1,8 +1,9 @@
+<h2>Paste #<%= @paste.id %></h2>
+<p>Last updated on <%= @paste.updated_at %></p>
+
 <div class="highlight">
 <pre>
 <ol class="linenums">
 <%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
-</ol>
-<%= @paste.html %>
-</pre>
+</ol><%= @paste.html %></pre>
 </div>

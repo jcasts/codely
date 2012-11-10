@@ -2,14 +2,17 @@ require 'data_mapper'
 require 'linguist'
 require 'digest/md5'
 
+DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, 'sqlite:///Users/jcastagna/codely/data.db')
+
 class Codely::Paste
 
   LANGUAGES = Linguist::Language.all.map{|l| l.name }
 
   class UnknownLanguage < RuntimeError; end
 
-  include DataMapper::Resource
   include Linguist::BlobHelper
+  include DataMapper::Resource
 
   property :id,         Serial
   property :filename,   String
@@ -24,22 +27,31 @@ class Codely::Paste
   property :term,       Text,   :required => true
 
 
-  before :create do |paste|
-    paste.created_at = Time.now
-    paste.viewed_at  = Time.now
+  before :valid? do
+    if !self.id
+      time = Time.now
+      self.created_at = time
+      self.updated_at = time
+      self.viewed_at  = time
+      self.prerender
+    end
   end
 
 
   before :save do |paste|
-    new_md5          = Digest::MD5.hexdigest paste.data
     paste.updated_at = Time.now
+    paste.prerender
+  end
 
-    if new_md5 != paste.md5
-      paste.md5 = new_md5
-      paste.process_code
-      paste.lang = paste.language.name if paste.language
-      paste.html = paste.colorize
-      paste.term = paste.colorize(:formatter => 'terminal')
+
+  def prerender
+    new_md5 = Digest::MD5.hexdigest self.data
+
+    if new_md5 != self.md5
+      self.md5 = new_md5
+      self.lang = self.language.name if self.language
+      self.html = self.colorize_without_wrapper
+      self.term = self.colorize(:formatter => 'terminal')
     end
   end
 
@@ -61,3 +73,4 @@ class Codely::Paste
 end
 
 DataMapper.finalize
+DataMapper.auto_migrate!
