@@ -142,6 +142,11 @@ class Codely::App < Sinatra::Application
   end
 
 
+  def languages
+    Codely::Paste::LANGUAGES
+  end
+
+
   # Retrieve the appropriate body string for the given target.
   def body_for target
     case target

@@ -96,15 +96,3 @@ $("textarea").keydown(function(e) {
     e.preventDefault();
   }
 });
-
-defaultText = "Write code here or drag-n-drop a file..."
-scriptarea = $("#scriptarea")
-scriptarea.attr("value", defaultText);
-
-scriptarea.focus(function(e){
-  if(this.value === defaultText) this.value = "";
-});
-
-scriptarea.blur(function(e){
-  if(!this.value) this.value = defaultText;
-});

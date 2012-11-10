@@ -4,6 +4,8 @@ require 'digest/md5'
 
 class Codely::Paste
 
+  LANGUAGES = Linguist::Language.all.map{|l| l.name }
+
   class UnknownLanguage < RuntimeError; end
 
   include DataMapper::Resource
