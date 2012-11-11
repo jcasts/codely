@@ -58,7 +58,7 @@ class Codely::App < Sinatra::Application
   # Get a the language for a filename
   post '/lang' do
     lang = Linguist::Language.find_by_filename(params[:filename]).first
-    lang ? lang.name : ""
+    lang ? lang.name : "Plain Text"
   end
 
 

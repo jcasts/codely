@@ -28,6 +28,7 @@ textarea.highlight {
   font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
   min-height: 400px;
   max-height: 100%;
+  resize: vertical;
 }
 
 pre, textarea.highlight  {

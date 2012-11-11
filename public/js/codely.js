@@ -106,6 +106,13 @@ scr      = document.getElementById("scriptarea");
 filename = document.getElementById("appendedInputButton");
 Codely.ScriptReader.setupDrop(scr, function(file){
   filename.value = file.name;
+  $.ajax('/lang', {
+    type: "POST",
+    data: {filename: file.name},
+    success: function(str){
+      $('#lang').val(str);
+    }
+  });
 });
 
 browser = document.getElementById('browse-func');
