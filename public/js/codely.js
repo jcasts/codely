@@ -4,18 +4,24 @@ Codely.alert = function(message){
   warn_text = $(".alert div");
   warn_text[0].innerHTML = "<b>Error:</b> "+message;
 
-  $(".alert").slideDown(200);
+  $(".alert").animate({top: '48px'}, 200);
 
+  Codely.clearAlertTimeout();
   Codely.alertTimeout = setTimeout(function(){
     Codely.dismissAlert();
-  },5000);
+  },4000);
 }
 
 Codely.dismissAlert = function(){
+  Codely.clearAlertTimeout();
+  $(".alert").animate({top: '0px'}, 300);
+}
+
+Codely.clearAlertTimeout = function(){
   if(Codely.alertTimeout) window.clearTimeout(Codely.alertTimeout);
   Codely.alertTimeout = null;
-  $(".alert").slideUp(300);
 }
+
 
 Codely.FileDrop = {
   setup: function(elmt, callback){
