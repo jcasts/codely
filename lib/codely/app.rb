@@ -225,6 +225,11 @@ class Codely::App < Sinatra::Application
 
 
   def curr_lang
-    @paste ? @paste.lang : @default_lang
+    h(@paste ? @paste.lang : @default_lang)
+  end
+
+
+  def curr_filename
+    h(@paste ? @paste.filename : "")
   end
 end

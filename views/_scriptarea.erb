@@ -1,6 +1,6 @@
 <form action="/<%= paste_id %>" method="POST">
   <div class="input-append filename right-form">
-    <input class="span2" name="filename" placeholder="File Name" id="appendedInputButton" type="text">
+    <input class="span2" name="filename" placeholder="File Name" id="appendedInputButton" type="text" value="<%= curr_filename %>">
     <button class="btn" id="browse-btn" type="button">Browse</button>
   </div>
   <textarea id="scriptarea" name="data" class="highlight script_drop" placeholder="Write code here or drag-n-drop a file..."><%= curr_data %></textarea>

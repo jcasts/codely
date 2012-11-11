@@ -1,9 +1,15 @@
 <h2>Paste #<%= @paste.id %></h2>
 <p>Last updated on <%= @paste.updated_at %></p>
 
-<div class="highlight">
-<pre>
-<ol class="linenums">
-<%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
-</ol><%= @paste.html %></pre>
+<div class="btn-group" style="float: right; margin-top: -40px">
+  <button class="btn btn-danger" id="delete-btn" type="button">Delete</button>
+  <a class="btn btn-inverse" href="/<%= @paste.id %>/edit" id="edit-btn" type="button">Edit</a>
+  <a class="btn btn-success" href="/" id="new-btn" type="button">New Paste</a>
+</div>
+
+<div>
+  <pre class="highlight">
+  <ol class="linenums">
+  <%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
+  </ol><%= @paste.html %></pre>
 </div>
