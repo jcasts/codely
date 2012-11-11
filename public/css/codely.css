@@ -54,3 +54,15 @@ ol li {
   text-align: right;
   line-height: 18px;
 }
+
+.alert-wrapper {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  top: 35px;
+}
+
+.alert {
+  display: none;
+  margin: 0px 50px 0 50px;
+}

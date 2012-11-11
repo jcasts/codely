@@ -199,7 +199,7 @@ class Codely::App < Sinatra::Application
 
 
   def h value
-    CGI.escapeHTML value
+    CGI.escapeHTML value.to_s
   end
 
 
@@ -225,11 +225,11 @@ class Codely::App < Sinatra::Application
 
 
   def curr_lang
-    h(@paste ? @paste.lang : @default_lang)
+    h(@paste ? @paste.lang.to_s : @default_lang)
   end
 
 
   def curr_filename
-    h(@paste ? @paste.filename : "")
+    h(@paste ? @paste.filename.to_s : "")
   end
 end

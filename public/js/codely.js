@@ -1,5 +1,22 @@
 var Codely = {}
 
+Codely.alert = function(message){
+  warn_text = $(".alert div");
+  warn_text[0].innerHTML = "<b>Error:</b> "+message;
+
+  $(".alert").slideDown(200);
+
+  Codely.alertTimeout = setTimeout(function(){
+    Codely.dismissAlert();
+  },5000);
+}
+
+Codely.dismissAlert = function(){
+  if(Codely.alertTimeout) window.clearTimeout(Codely.alertTimeout);
+  Codely.alertTimeout = null;
+  $(".alert").slideUp(300);
+}
+
 Codely.FileDrop = {
   setup: function(elmt, callback){
     elmt.addEventListener('dragover', Codely.FileDrop.dragover, false);
@@ -36,8 +53,6 @@ Codely.FileDrop = {
 Codely.ScriptReader = {
   maxSize: (1024 * 1024),
 
-  errors: [],
-
   setupDrop: function(elmt, callback){
     Codely.FileDrop.setup(elmt, Codely.ScriptReader.readFile);
     elmt.onscript = callback;
@@ -58,15 +73,16 @@ Codely.ScriptReader = {
 
   readFile: function(elmt, file){
     if(file.size > Codely.ScriptReader.maxSize){
-      Codely.ScriptReader.errors.push(
-        file.name + " is larger than 1Mb"
-      );
+      Codely.alert("<em>'"+file.name+"</em> is larger than 1Mb.");
 
     } else if(!file.type.match('text.*')){
-      Codely.ScriptReader.errors.push(
-        file.name + " is not a text file"
+      var filetype = '';
+      if(file.type) filetype = "<em>'"+file.type+"'</em> ";
+      Codely.alert(
+        "Unexpected file-type "+filetype+
+        "for file <em>'"+file.name+"'</em>."
       );
-
+      
     } else {
       var reader = new FileReader();
       reader.onload = function(ev){

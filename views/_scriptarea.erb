@@ -16,6 +16,9 @@
   <% end %>
   </select>
   <button type="submit" class="btn btn-primary">Submit</button>
+  <% if @paste %>
+  <a class="btn btn-danger" href="/<%= @paste.id %>">Cancel</a>
+  <% end %>
   </div>
   <input class="btn" name="file" id="browse-func" type="file"/>
 </form>
