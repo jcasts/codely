@@ -9,8 +9,8 @@
 
 <div>
   <span class="label label-important" style="float: right"><%= @paste.lang %></span>
-  <pre class="highlight">
-  <ol class="linenums">
+  <ol class="linenums code">
   <%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
-  </ol><%= @paste.html %></pre>
+  </ol>
+  <pre class="highlight code"><%= @paste.html %></pre>
 </div>

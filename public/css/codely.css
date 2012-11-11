@@ -25,20 +25,21 @@ input#browse-func {
 }
 
 textarea.highlight {
-  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
   min-height: 400px;
   max-height: 100%;
   resize: vertical;
 }
 
-pre, textarea.highlight  {
+pre, .code {
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
   font-size: 12px;
   line-height: 18px;
+  color: #999999;
 }
 
 ol.linenums {
   list-style-position:inside;
-  padding: 0;
+  padding: 10px 0 10px 10px;
   float: left;
   line-height: 0px;
   margin: 0px;
