@@ -8,6 +8,7 @@
 </div>
 
 <div>
+  <span class="label label-important" style="float: right"><%= @paste.lang %></span>
   <pre class="highlight">
   <ol class="linenums">
   <%= @paste.html.lines.count.times.inject(""){|str, i| str << "\n<li></li>" } %>
