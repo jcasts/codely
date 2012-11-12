@@ -21,10 +21,15 @@ class Codely::App < Sinatra::Application
   before do
     @default_lang  = session[:last_lang]  || "Ruby"
     @default_theme = session[:last_theme] || "default"
+    @alert  = session[:alert]
+    @notice = session[:notice]
   end
 
 
   after do
+    session.delete(:alert)  if @alert
+    session.delete(:notice) if @notice
+
     content_type 'text/plain' if plain?
   end
 
@@ -42,7 +47,12 @@ class Codely::App < Sinatra::Application
     session[:last_lang]  = @paste.lang
     session[:last_theme] = @paste.theme
 
-    redirect_to_paste @paste
+    if @paste.saved?
+      redirect_to_paste @paste
+    else
+      session[:alert] = "Could not save paste. Please try again later."
+      render_out(:new)
+    end
   end
 
 
@@ -51,7 +61,11 @@ class Codely::App < Sinatra::Application
   # Returns a 302 with the location of new paste.
   put '/' do
     @paste = Codely::Paste.create( paste_attribs )
-    render_out @paste
+    if @paste.saved?
+      render_out @paste
+    else
+      render_out "Error saving paste"
+    end
   end
 
 
@@ -108,8 +122,22 @@ class Codely::App < Sinatra::Application
     @paste = Codely::Paste.get params[:id]
     render_out 404, :not_found unless @paste
 
-    @paste.destroy
-    redirect to('/')
+    @paste.destroy ? "Deleted" : "Failed"
+  end
+
+
+  # Delete an existing paste by id.
+  post '/:id/delete' do
+    @paste = Codely::Paste.get params[:id]
+    render_out 404, :not_found unless @paste
+
+    if @paste.destroy
+      session[:notice] = "Deleted paste ##{@paste.id}"
+      redirect to('/')
+    else
+      session[:alert] = "Could not delete paste ##{@paste.id}"
+      redirect_to_paste @paste
+    end
   end
 
 

@@ -2,7 +2,7 @@ var Codely = {}
 
 Codely.alert = function(message){
   warn_text = $(".alert div");
-  warn_text[0].innerHTML = "<b>Error:</b> "+message;
+  warn_text[0].innerHTML = "<b>Warning:</b> "+message;
 
   $(".alert").animate({top: '48px'}, 200);
 
@@ -20,6 +20,46 @@ Codely.dismissAlert = function(){
 Codely.clearAlertTimeout = function(){
   if(Codely.alertTimeout) window.clearTimeout(Codely.alertTimeout);
   Codely.alertTimeout = null;
+}
+
+
+Codely.prompt = function(title, msg, buttons){
+  if(!buttons){
+    buttons = [{
+      text: "OK",
+      type: "primary",
+      callback: Codely.dismissPrompt
+    }];
+  }
+
+  $('#prompt .prompt-title').text(title);
+  $('#prompt .prompt-msg').text(msg);
+  var footer = $('#prompt .prompt-footer');
+  footer.text("");
+
+  var link = $(document.createElement('a'));
+  link.attr("href", "#");
+  link.addClass("btn");
+
+  $.each(buttons, function(i, btn){
+    var elmt = link.clone();
+    if(btn.href) elmt.attr("href", btn.href);
+    if(btn.type) elmt.addClass("btn-"+btn.type);
+    if(btn.callback){
+      elmt.click(btn.callback);
+    } else {
+      elmt.click(Codely.dismissPrompt);
+    }
+
+    elmt.text(btn.text);
+    footer.append(elmt);
+  });
+
+  $('#prompt').modal();
+}
+
+Codely.dismissPrompt = function(callback){
+  $('#prompt').modal("hide");
 }
 
 
@@ -104,21 +144,24 @@ Codely.ScriptReader = {
 
 scr      = document.getElementById("scriptarea");
 filename = document.getElementById("appendedInputButton");
-Codely.ScriptReader.setupDrop(scr, function(file){
-  filename.value = file.name;
-  $.ajax('/lang', {
-    type: "POST",
-    data: {filename: file.name},
-    success: function(str){
-      $('#lang').val(str);
-    }
-  });
-});
 
-browser = document.getElementById('browse-func');
-Codely.ScriptReader.setupBrowse(browser, function(file){
-  Codely.ScriptReader.readFile(scr, file);
-});
+if(scr){
+  Codely.ScriptReader.setupDrop(scr, function(file){
+    filename.value = file.name;
+    $.ajax('/lang', {
+      type: "POST",
+      data: {filename: file.name},
+      success: function(str){
+        $('#lang').val(str);
+      }
+    });
+  });
+
+  browser = document.getElementById('browse-func');
+  Codely.ScriptReader.setupBrowse(browser, function(file){
+    Codely.ScriptReader.readFile(scr, file);
+  });
+}
 
 
 //Fake browse button
@@ -151,4 +194,15 @@ $("textarea").keydown(function(e){
     // prevent the focus lose
     e.preventDefault();
   }
+});
+
+
+$("#delete-btn").click(function(e){
+  Codely.prompt("Warning", "Do you really want to delete this paste?", [
+    {text: "Cancel"},
+    {text: "Delete", type: "danger", callback: function(e){
+      $('#delete-paste').submit();
+     }
+    }
+  ]);
 });

@@ -1,11 +1,14 @@
 <h2>Paste #<%= @paste.id %></h2>
 <p>Last updated on <%= @paste.updated_at %></p>
 
-<div class="btn-group" style="float: right; margin-top: -40px">
-  <button class="btn btn-danger" id="delete-btn" type="button">Delete</button>
-  <a class="btn btn-inverse" href="/<%= @paste.id %>/edit" id="edit-btn" type="button">Edit</a>
-  <a class="btn btn-success" href="/" id="new-btn" type="button">New Paste</a>
-</div>
+<form id="delete-paste" action="/<%= @paste.id %>/delete" method="POST" style="margin: 0">
+</form>
+
+  <div class="btn-group" style="float: right; margin-top: -40px">
+    <button class="btn btn-danger" id="delete-btn" type="button">Delete</button>
+    <a class="btn btn-inverse" href="/<%= @paste.id %>/edit" id="edit-btn" type="button">Edit</a>
+    <a class="btn btn-success" href="/" id="new-btn" type="button">New Paste</a>
+  </div>
 
 <div>
   <span class="label label-important" style="float: right"><%= @paste.lang %></span>
