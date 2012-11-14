@@ -50,7 +50,7 @@ class Codely::App < Sinatra::Application
     if @paste.saved?
       redirect_to_paste @paste
     else
-      session[:alert] = "Could not save paste. Please try again later."
+      @alert = "Could not save paste. Please try again later."
       render_out(:new)
     end
   end

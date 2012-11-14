@@ -40,5 +40,13 @@
       <%= yield %>
     </div>
     <script src="/js/codely.js"></script>
+    <script language="javascript">
+      <% if @alert %>
+      Codely.alert("<%= @alert %>", "error");
+      <% end %>
+      <% if @notice %>
+      Codely.alert("<%= @notice %>", "info");
+      <% end %>
+    </script>
   </body>
 </html>
