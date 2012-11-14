@@ -5,18 +5,32 @@ require 'net/http'
 class Codely::Client
 
   class Error < RuntimeError; end
+  class EmptyData < Error; end
   class InvalidHost < Error; end
 
   PASTE_ATTR = [:lang, :filename]
 
-  attr_accessor :host, :port
+  attr_accessor :host, :port, :ssl, :prefix
 
   ##
-  # Create a new client for a given host and port.
+  # Create a new client for a given host and port:
+  #
+  #   # Simple Host:Port setup
+  #   Codely::Client.new "localhost:80"
+  #
+  #   # Setup with SSL
+  #   Codely::Client.new "https://host.com"
+  #
+  #   # Supports path prefixes
+  #   Codely::Client.new "https://host.com/codely"
 
-  def initialize host, port=nil
-    @host = host || 'localhost'
-    @port = port || 80
+  def initialize host
+    host = URI.parse(host.to_s) unless URI === host
+
+    @ssl    = host.scheme.to_s.downcase == 'https'
+    @host   = host.host || 'localhost'
+    @port   = host.port || 80
+    @prefix = host.path unless host.path.to_s =~ /^\/?$/
     @headers = {"Accept" => "text/plain"}
   end
 
@@ -101,9 +115,15 @@ class Codely::Client
 
 
   def make_request req
-    res = Net::HTTP.start(@host, @port) do |http|
-      http.request(req)
+    if @prefix
+      path = File.join(@prefix, req.instance_variable_get("@path"))
+      req.instance_variable_set("@path", path)
     end
+
+    http = Net::HTTP.new(@host, @port)
+    http.use_ssl = @ssl
+
+    res = http.request(req)
 
     raise InvalidHost, "#{@host}:#{@port} is not a valid Codely server" unless
       res['Codely-Version']

@@ -10,7 +10,7 @@ class Codely::Cmd
     require 'codely/client'
 
     options = parse_client_argv argv
-    cl = Codely::Client.new options.delete(:host), options.delete(:port)
+    cl = Codely::Client.new options.delete(:host)
 
     resp =
       case options[:action]
@@ -90,9 +90,7 @@ Make and edit Codely pastes.
       end
 
       opt.on('-H', '--host [STR]', 'Remote <host[:port]> or alias') do |val|
-
-        val.sub!(/^\w+:\/\//, '')
-        options[:host], options[:port] = val.split(":", 2)
+        options[:host] = val
       end
 
       opt.on('-c', '--config [PATH]', 'Path to alternate config file') do |val|
