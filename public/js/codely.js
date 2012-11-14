@@ -8,6 +8,9 @@ Codely.alert = function(message, type){
   warn_text.html("<b>"+title+":</b> "+message);
 
   $(".alert-wrapper").prepend(alert_elmt);
+
+  var height = alert_elmt.outerHeight();
+  alert_elmt.css('margin-bottom', (-height).toString()+'px');
   alert_elmt.animate({top: '48px', "margin-bottom": '0px'}, 200);
 
   //Codely.clearAlertTimeout();

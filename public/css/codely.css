@@ -62,9 +62,12 @@ ol li {
 }
 
 .alert {
-  margin: 0px 50px -31px 50px;
+  margin: 0px 50px 0px 50px;
   position: relative;
 }
 
 .alert .close {
+  position: absolute;
+  right: 20px;
+  top: 10px;
 }
