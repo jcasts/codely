@@ -13,25 +13,18 @@ Codely.alert = function(message, type){
   alert_elmt.css('margin-bottom', (-height).toString()+'px');
   alert_elmt.animate({top: '48px', "margin-bottom": '0px'}, 200);
 
-  //Codely.clearAlertTimeout();
-  Codely.alertTimeout = setTimeout(function(){
+  setTimeout(function(){
     Codely.dismissAlert(alert_elmt);
   },4000);
 }
 
 Codely.dismissAlert = function(elmt){
-  //Codely.clearAlertTimeout();
   var alert_elmt = $(elmt);
   var zi = alert_elmt.css('z-index');
   alert_elmt.css('z-index', (zi - 1).toString());
   alert_elmt.animate({top: '0px'}, 300, function(){
     alert_elmt.detach();
   });
-}
-
-Codely.clearAlertTimeout = function(){
-  if(Codely.alertTimeout) window.clearTimeout(Codely.alertTimeout);
-  Codely.alertTimeout = null;
 }
 
 Codely.newAlertElmt = function(type){

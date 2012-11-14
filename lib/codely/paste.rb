@@ -1,12 +1,9 @@
 require 'data_mapper'
-require 'linguist'
 require 'digest/md5'
 
 DataMapper.setup(:default, 'sqlite:///Users/jcastagna/codely/data.db')
 
 class Codely::Paste
-
-  LANGUAGES = Linguist::Language.all.map{|l| l.name }
 
   class UnknownLanguage < RuntimeError; end
 

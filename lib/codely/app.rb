@@ -62,7 +62,7 @@ class Codely::App < Sinatra::Application
   put '/' do
     @paste = Codely::Paste.create( paste_attribs )
     if @paste.saved?
-      render_out @paste
+      render_out @paste.id.to_s
     else
       render_out "Error saving paste"
     end
@@ -113,7 +113,7 @@ class Codely::App < Sinatra::Application
     render_out 404, :not_found unless @paste
 
     @paste.update(paste_attribs)
-    render_out @paste
+    render_out @paste.id.to_s
   end
 
 
@@ -155,7 +155,7 @@ class Codely::App < Sinatra::Application
       @attribs[:data]     ||= params[:file][:tempfile].read.strip
       @attribs[:filename] ||= params[:file][:filename]
 
-    elsif !@attribs[:data] && !@attribs.empty?
+    elsif !@attribs[:data] && request.request_method == "PUT"
       # look for uploaded file in INPUT
       data = request.body.read.strip
       @attribs[:data] = data unless data.empty?
@@ -243,7 +243,7 @@ class Codely::App < Sinatra::Application
 
 
   def languages
-    Codely::Paste::LANGUAGES
+    Codely::LANGUAGES
   end
 
 
