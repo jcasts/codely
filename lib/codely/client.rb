@@ -1,12 +1,18 @@
+require 'codely'
+require 'cgi'
 require 'net/http'
 
 class Codely::Client
+
+  PASTE_ATTR = [:lang, :filename]
 
   ##
   # Create a new client for a given host and port.
 
   def initialize host, port
-    
+    @host = host
+    @port = port
+    @headers = {"Accept" => "text/plain"}
   end
 
 
@@ -20,7 +26,15 @@ class Codely::Client
   # Returns the ID of the newly created Paste.
 
   def create data, opts={}
-    
+    req = Net::HTTP::Put.new "/#{build_query(opts)}", @headers
+
+    if data.respond_to?(:read)
+      req.body_stream = data
+    else
+      req.body = data.to_s
+    end
+
+    make_request(req)
   end
 
 
@@ -28,7 +42,8 @@ class Codely::Client
   # Delete the Paste with the given ID.
 
   def delete id
-    
+    req = Net::HTTP::Delete.new "/#{id}", @headers
+    make_request(req)
   end
 
 
@@ -36,8 +51,10 @@ class Codely::Client
   # Get the Paste body for the given ID.
   # Returns a String, or nil if not found.
 
-  def get id
-    
+  def get id, raw=true
+    query = "?raw=1" if raw
+    req = Net::HTTP::Get.new "/#{id}#{query}", @headers
+    make_request(req)
   end
 
 
@@ -49,6 +66,41 @@ class Codely::Client
   # :lang:: String - the language parser to use. See Codely::LANGUAGES.
 
   def update id, opts={}
-    
+    req = Net::HTTP::Put.new "/#{id}#{build_query(opts)}", @headers
+
+    if opts[:data].respond_to?(:read)
+      req.body_stream = data
+    elsif opts[:data]
+      req.body = data.to_s
+    end
+
+    make_request(req)
+  end
+
+
+  private
+
+  def build_query opts
+    query = []
+
+    PASTE_ATTR.each do |key|
+      (query << "#{key}=#{CGI.escape(opts[key])}") if opts[key]
+    end
+
+    return if query.empty?
+
+    "?#{query.join("&")}"
+  end
+
+
+  def make_request req
+    res = Net::HTTP.start(@host, @port) do |http|
+      http.request(req)
+    end
+
+    res.body.strip
+
+  rescue
+    return nil
   end
 end
