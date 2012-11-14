@@ -3,4 +3,4 @@
 $: << File.join(File.dirname(__FILE__), "../lib") if $0 == "bin/codely"
 
 require 'codely/cmd'
-Codely::Cmd.run_client
+Codely::Cmd.run_server

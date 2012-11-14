@@ -30,6 +30,7 @@ class Codely::App < Sinatra::Application
     session.delete(:alert)  if @alert
     session.delete(:notice) if @notice
 
+    headers 'Codely-Version' => Codely::VERSION
     content_type 'text/plain' if plain?
   end
 

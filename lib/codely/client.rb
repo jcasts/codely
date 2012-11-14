@@ -4,14 +4,19 @@ require 'net/http'
 
 class Codely::Client
 
+  class Error < RuntimeError; end
+  class InvalidHost < Error; end
+
   PASTE_ATTR = [:lang, :filename]
+
+  attr_accessor :host, :port
 
   ##
   # Create a new client for a given host and port.
 
-  def initialize host, port
-    @host = host
-    @port = port
+  def initialize host, port=nil
+    @host = host || 'localhost'
+    @port = port || 80
     @headers = {"Accept" => "text/plain"}
   end
 
@@ -26,14 +31,7 @@ class Codely::Client
   # Returns the ID of the newly created Paste.
 
   def create data, opts={}
-    req = Net::HTTP::Put.new "/#{build_query(opts)}", @headers
-
-    if data.respond_to?(:read)
-      req.body_stream = data
-    else
-      req.body = data.to_s
-    end
-
+    req = req = put_request(opts.merge(:data => data))
     make_request(req)
   end
 
@@ -66,14 +64,7 @@ class Codely::Client
   # :lang:: String - the language parser to use. See Codely::LANGUAGES.
 
   def update id, opts={}
-    req = Net::HTTP::Put.new "/#{id}#{build_query(opts)}", @headers
-
-    if opts[:data].respond_to?(:read)
-      req.body_stream = data
-    elsif opts[:data]
-      req.body = data.to_s
-    end
-
+    req = put_request(opts.merge(:id => id))
     make_request(req)
   end
 
@@ -93,14 +84,33 @@ class Codely::Client
   end
 
 
+  def put_request opts
+    opts[:filename] ||= File.basename(opts[:data].path) if
+      opts[:data].respond_to?(:path)
+
+    req = Net::HTTP::Put.new "/#{opts[:id]}#{build_query(opts)}", @headers
+
+    if opts[:data].respond_to?(:read)
+      req.body = opts[:data].read
+    elsif opts[:data]
+      req.body = opts[:data].to_s
+    end
+
+    req
+  end
+
+
   def make_request req
     res = Net::HTTP.start(@host, @port) do |http|
       http.request(req)
     end
 
+    raise InvalidHost, "#{@host}:#{@port} is not a valid Codely server" unless
+      res['Codely-Version']
+
     res.body.strip
 
-  rescue
-    return nil
+  #rescue
+  #  return nil
   end
 end
