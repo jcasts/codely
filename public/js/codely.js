@@ -1,25 +1,46 @@
 var Codely = {}
 
 Codely.alert = function(message){
-  warn_text = $(".alert div");
-  warn_text[0].innerHTML = "<b>Warning:</b> "+message;
+  var alert_elmt = Codely.newAlertElmt();
+  var warn_text  = alert_elmt.children(".alert-text");
+  warn_text.html("<b>Warning:</b> "+message);
 
-  $(".alert").animate({top: '48px'}, 200);
+  $(".alert-wrapper").prepend(alert_elmt);
+  alert_elmt.animate({top: '48px'}, 200);
 
-  Codely.clearAlertTimeout();
+  //Codely.clearAlertTimeout();
   Codely.alertTimeout = setTimeout(function(){
-    Codely.dismissAlert();
+    Codely.dismissAlert(alert_elmt);
   },4000);
 }
 
-Codely.dismissAlert = function(){
-  Codely.clearAlertTimeout();
-  $(".alert").animate({top: '0px'}, 300);
+Codely.dismissAlert = function(elmt){
+  //Codely.clearAlertTimeout();
+  var alert_elmt = $(elmt);
+  var zi = alert_elmt.css('z-index');
+  alert_elmt.css('z-index', (zi - 1).toString());
+  alert_elmt.animate({top: '0px'}, 300, function(){
+    alert_elmt.detach();
+  });
 }
 
 Codely.clearAlertTimeout = function(){
   if(Codely.alertTimeout) window.clearTimeout(Codely.alertTimeout);
   Codely.alertTimeout = null;
+}
+
+Codely.newAlertElmt = function(){
+  var elmt = $( document.createElement('div') );
+  elmt.addClass("alert alert-block alert-error");
+  elmt.html('<button type="button" class="close">×</button><div class="alert-text"></div>');
+  elmt.css('z-index', '100');
+
+  var close_btn = elmt.children(".close");
+  close_btn.click(function(){
+    Codely.dismissAlert(elmt);
+  });
+
+  return elmt;
 }
 
 
