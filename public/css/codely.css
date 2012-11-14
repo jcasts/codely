@@ -62,7 +62,9 @@ ol li {
 }
 
 .alert {
-  /*display: none;*/
-  margin: 0px 50px 0 50px;
+  margin: 0px 50px -31px 50px;
   position: relative;
+}
+
+.alert .close {
 }

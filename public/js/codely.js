@@ -1,12 +1,14 @@
 var Codely = {}
 
-Codely.alert = function(message){
-  var alert_elmt = Codely.newAlertElmt();
+Codely.alert = function(message, type){
+  var alert_elmt = Codely.newAlertElmt(type);
   var warn_text  = alert_elmt.children(".alert-text");
-  warn_text.html("<b>Warning:</b> "+message);
+  var title      = "Warning";
+  if(type) title = type.charAt(0).toUpperCase() + type.slice(1);
+  warn_text.html("<b>"+title+":</b> "+message);
 
   $(".alert-wrapper").prepend(alert_elmt);
-  alert_elmt.animate({top: '48px'}, 200);
+  alert_elmt.animate({top: '48px', "margin-bottom": '0px'}, 200);
 
   //Codely.clearAlertTimeout();
   Codely.alertTimeout = setTimeout(function(){
@@ -29,9 +31,10 @@ Codely.clearAlertTimeout = function(){
   Codely.alertTimeout = null;
 }
 
-Codely.newAlertElmt = function(){
+Codely.newAlertElmt = function(type){
+  if(!type) type = "warning";
   var elmt = $( document.createElement('div') );
-  elmt.addClass("alert alert-block alert-error");
+  elmt.addClass("alert alert-block alert-"+type);
   elmt.html('<button type="button" class="close">×</button><div class="alert-text"></div>');
   elmt.css('z-index', '100');
 
@@ -140,14 +143,15 @@ Codely.ScriptReader = {
 
   readFile: function(elmt, file){
     if(file.size > Codely.ScriptReader.maxSize){
-      Codely.alert("<em>'"+file.name+"</em> is larger than 1Mb.");
+      Codely.alert("<em>'"+file.name+"</em> is larger than 1Mb.", "error");
 
     } else if(!file.type.match('text.*')){
       var filetype = '';
       if(file.type) filetype = "<em>'"+file.type+"'</em> ";
       Codely.alert(
         "Unexpected file-type "+filetype+
-        "for file <em>'"+file.name+"'</em>."
+        "for file <em>'"+file.name+"'</em>.",
+        "error"
       );
       
     } else {
