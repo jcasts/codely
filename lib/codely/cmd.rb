@@ -28,6 +28,8 @@ class Codely::Cmd
 
   rescue Codely::Client::Error => e
     $stderr.puts "ERROR: #{e.message}"
+  rescue OptionParser::ParseError => e
+    $stderr.puts "ERROR: #{e.message}\nUse codely --help for usage info."
   end
 
 
@@ -71,33 +73,32 @@ Make and edit Codely pastes.
   Options:
         STR
 
-      opt.on('-p', '--paste [ID]', 'ID of the paste to work with') do |val|
+      opt.on('-p', '--paste ID', 'ID of the paste to work with') do |val|
         options[:paste_id] = val
       end
 
-
-      opt.on('-f', '--filename [STR]', 'Name the file on the server') do |val|
+      opt.on('-f', '--filename STR', 'Name the file on the server') do |val|
         options[:filename] = val
       end
 
-      opt.on('-l', '--language [STR]', 'Language for submitted paste') do |val|
+      opt.on('-l', '--language STR', 'Language for submitted paste') do |val|
         options[:lang] = val
       end
 
-      opt.on('-d', '--delete [ID]', 'Delete paste with given ID') do |val|
+      opt.on('-d', '--delete ID', 'Delete paste with given ID') do |val|
         options[:paste_id] = val
         options[:action]   = :delete
       end
 
-      opt.on('-H', '--host [STR]', 'Remote <host[:port]> or alias') do |val|
+      opt.on('-h', '--host STR', 'Remote <host[:port]> or alias') do |val|
         options[:host] = val
       end
 
-      opt.on('-c', '--config [PATH]', 'Path to alternate config file') do |val|
-        options[:config] = val
+      opt.on('-c', '--config PATH', 'Path to alternate config file') do |val|
+        options[:config] = File.read val
       end
 
-      opt.on('-h', '--help', 'Show this screen') do
+      opt.on('-?', '--help', 'Show this screen') do
         puts opt
         exit
       end
@@ -124,6 +125,12 @@ Make and edit Codely pastes.
 
     if !options[:action] && options[:data]
       options[:action] = options[:paste_id] ? :update : :create
+    end
+
+    if !options[:data] && !options[:id]
+      $stderr.puts "\nPlease specify a data source or paste id."
+      puts opts
+      exit 1
     end
 
     options[:action] ||= :get

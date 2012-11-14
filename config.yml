@@ -1,7 +1,10 @@
 client:
-  default:
-    host: localhost     # Default host to connect to
-    port: 70741         # Default port to connect to
+  hosts:
+    # Default host to connect to.
+    # Also supports the following:
+    #   host.com
+    #   http://host.com/path_prefix
+    default: localhost:79741
 
 server:
   port:     70741       # Port to run the server on

@@ -7,6 +7,8 @@ class Codely::Client
   class Error < RuntimeError; end
   class EmptyData < Error; end
   class InvalidHost < Error; end
+  class ConnectionError < Error; end
+  class SSLError < Error; end
 
   PASTE_ATTR = [:lang, :filename]
 
@@ -25,6 +27,7 @@ class Codely::Client
   #   Codely::Client.new "https://host.com/codely"
 
   def initialize host
+    host = "http://#{host}" if String === host && host !~ %r{^\w+://}
     host = URI.parse(host.to_s) unless URI === host
 
     @ssl    = host.scheme.to_s.downcase == 'https'
@@ -129,6 +132,12 @@ class Codely::Client
       res['Codely-Version']
 
     res.body.strip
+
+  rescue SocketError
+    raise ConnectionError, "Could not connect to #{@host}:#{@port}"
+
+  rescue OpenSSL::SSL::SSLError
+    raise SSLError, "Could verify SSL connection to #{@host}:#{@port}"
 
   #rescue
   #  return nil
