@@ -1,7 +1,14 @@
 require 'codely'
 require 'optparse'
+require 'yaml'
 
 class Codely::Cmd
+
+  SERVER_CONFIG_FILE = File.expand_path "~/.codelyd"
+  CLIENT_CONFIG_FILE = File.expand_path "~/.codely"
+  CLIENT_DEFAULT_CONFIG = {
+    'hosts' => {'default' => 'localhost:70741'}
+  }
 
   ##
   # Main entry point for running the Codely client command.
@@ -28,8 +35,7 @@ class Codely::Cmd
 
   rescue Codely::Client::Error => e
     $stderr.puts "ERROR: #{e.message}"
-  rescue OptionParser::ParseError => e
-    $stderr.puts "ERROR: #{e.message}\nUse codely --help for usage info."
+    exit 1
   end
 
 
@@ -38,7 +44,7 @@ class Codely::Cmd
   end
 
 
-  def self.run_config argv=ARGV
+  def self.run_client_config argv=ARGV
     
   end
 
@@ -95,7 +101,7 @@ Make and edit Codely pastes.
       end
 
       opt.on('-c', '--config PATH', 'Path to alternate config file') do |val|
-        options[:config] = File.read val
+        options[:config_path] = val
       end
 
       opt.on('-?', '--help', 'Show this screen') do
@@ -110,6 +116,15 @@ Make and edit Codely pastes.
     end
 
     opts.parse! argv
+
+    config      = CLIENT_DEFAULT_CONFIG
+    config_file = options[:config_path] || CLIENT_CONFIG_FILE
+    config      = YAML.load_file(config_file) if File.file?(config_file)
+
+    if !options[:host] && config['hosts']
+      options[:host] = config['hosts'][options[:host]] ||
+                       config['hosts']['default']
+    end
 
     if !argv.empty?
       begin
@@ -135,5 +150,10 @@ Make and edit Codely pastes.
 
     options[:action] ||= :get
     options
+
+  rescue OptionParser::ParseError => e
+    $stderr.puts "ERROR: #{e.message}
+Use #{opts.program_name} --help for usage info."
+    exit 1
   end
 end

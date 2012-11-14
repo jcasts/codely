@@ -153,12 +153,12 @@ class Codely::App < Sinatra::Application
     end
 
     if Hash === params[:file] && params[:file][:tempfile].respond_to?(:read)
-      @attribs[:data]     ||= params[:file][:tempfile].read.strip
+      @attribs[:data]     ||= params[:file][:tempfile].read(1048576).strip
       @attribs[:filename] ||= params[:file][:filename]
 
     elsif !@attribs[:data] && request.request_method == "PUT"
       # look for uploaded file in INPUT
-      data = request.body.read.strip
+      data = request.body.read(1048576).strip
       @attribs[:data] = data unless data.empty?
     end
 
