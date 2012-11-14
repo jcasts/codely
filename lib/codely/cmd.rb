@@ -17,11 +17,11 @@ class Codely::Cmd
       when :get
         cl.get options[:id]
       when :create
-        cl.create options.delete(:data), options
+        cl.paste_url cl.create(options.delete(:data), options)
       when :delete
         cl.delete options[:id]
       when :update
-        cl.update options.delete(:id), options
+        cl.paste_url cl.update(options.delete(:id), options)
       end
 
     puts resp

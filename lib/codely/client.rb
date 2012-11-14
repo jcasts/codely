@@ -86,6 +86,15 @@ class Codely::Client
   end
 
 
+  ##
+  # Return the full url for the given Paste ID.
+
+  def paste_url id
+    host = "#{@ssl ? "https" : "http"}://#{@host}#{":#{@port}" if @port != 80}"
+    File.join(*[host, @prefix, id].compact)
+  end
+
+
   private
 
   def build_query opts
