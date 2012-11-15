@@ -44,11 +44,6 @@ class Codely::Cmd
   end
 
 
-  def self.run_client_config argv=ARGV
-    
-  end
-
-
 
   def self.parse_client_argv argv
     options = {}
@@ -100,6 +95,23 @@ Make and edit Codely pastes.
         options[:host] = val
       end
 
+      opt.separator <<-STR
+
+  Config Options:
+      STR
+
+      opt.on('--hosts', 'Display all saved hosts') do
+        options[:show_hosts] = true
+      end
+
+      opt.on('--alias STR', 'Use with -h so save the host as an alias') do |val|
+        options[:save_host] = val
+      end
+
+      opt.on('--rm-alias STR', 'Delete a saved host alias') do |val|
+        options[:del_host] = val
+      end
+
       opt.on('-c', '--config PATH', 'Path to alternate config file') do |val|
         options[:config_path] = val
       end
@@ -117,9 +129,7 @@ Make and edit Codely pastes.
 
     opts.parse! argv
 
-    config      = CLIENT_DEFAULT_CONFIG
-    config_file = options[:config_path] || CLIENT_CONFIG_FILE
-    config      = YAML.load_file(config_file) if File.file?(config_file)
+    config = process_client_config options
 
     if !options[:host] && config['hosts']
       options[:host] = config['hosts'][options[:host]] ||
@@ -143,7 +153,7 @@ Make and edit Codely pastes.
     end
 
     if !options[:data] && !options[:id]
-      $stderr.puts "\nPlease specify a data source or paste id."
+      $stderr.puts "\nPlease specify a data source or paste ID."
       puts opts
       exit 1
     end
@@ -155,5 +165,37 @@ Make and edit Codely pastes.
     $stderr.puts "ERROR: #{e.message}
 Use #{opts.program_name} --help for usage info."
     exit 1
+  end
+
+
+  def self.process_client_config options={}
+    config      = CLIENT_DEFAULT_CONFIG
+    config_file = options[:config_path] || CLIENT_CONFIG_FILE
+    config      = YAML.load_file(config_file) if File.file?(config_file)
+
+    if options[:show_hosts]
+      puts config['hosts'].map{|key, val| "#{key}:\t\t#{val}"}.join("\n")
+      write_yml_and_exit config_file, config
+
+    elsif options[:save_host]
+      raise OptionParser::ParseError, "Specify a host with -h to save alias" if
+        !options[:host]
+      config['hosts'][options[:save_host]] = options[:host]
+      puts "Writing #{options[:save_host]} to config..."
+      write_yml_and_exit config_file, config
+
+    elsif options[:del_host]
+      config['hosts'].delete(options[:del_host])
+      puts "Removing #{options[:del_host]} from config..."
+      write_yml_and_exit config_file, config
+    end
+
+    config
+  end
+
+
+  def self.write_yml_and_exit path, data
+    File.open(path, "w"){|f| f.write data.to_yaml }
+    exit
   end
 end
