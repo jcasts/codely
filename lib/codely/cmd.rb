@@ -5,6 +5,15 @@ require 'yaml'
 class Codely::Cmd
 
   SERVER_CONFIG_FILE = File.expand_path "~/.codelyd"
+  SERVER_DEFAULT_CONFIG = {
+    "host"         => "0.0.0.0:70741",
+    "pid"          => File.expand_path("~/codely.pid"),
+    "instances"    => 1,
+    "connections"  => 50,
+    "threads"      => 10,
+    "max_filesize" => 1048576
+  }
+
   CLIENT_CONFIG_FILE = File.expand_path "~/.codely"
   CLIENT_DEFAULT_CONFIG = {
     'hosts' => {'default' => 'localhost:70741'}
@@ -40,7 +49,38 @@ class Codely::Cmd
 
 
   def self.run_server argv=ARGV
-    
+    options = {}
+
+    opts = OptionParser.new do |opt|
+        opt.program_name = File.basename $0
+        opt.version = Codely::VERSION
+        opt.release = nil
+
+        opt.banner = <<-STR
+
+#{opt.program_name} #{opt.version}
+
+Codely server daemon.
+
+  Usage:
+    #{opt.program_name} --help
+    #{opt.program_name} --version
+    #{opt.program_name} action [options]
+
+  Examples:
+    #{opt.program_name} start -h 0.0.0.0:54321
+    #{opt.program_name} restart -r path/mylib.rb
+    #{opt.program_name} stop
+
+  Options:
+        STR
+
+      opt.on('-h', '--host STR', 'Socket to bind to <host[:port]>') do |val|
+        
+      end
+    end
+
+    opts.parse! argv
   end
 
 

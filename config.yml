@@ -1,16 +1,8 @@
-client:
-  hosts:
-    # Default host to connect to.
-    # Also supports the following:
-    #   host.com
-    #   http://host.com/path_prefix
-    default: localhost:70741
-
 server:
   port:     70741       # Port to run the server on
   instances:    4       # Number of server instances to run
   pid: ~/codely.pid     # Path to pid file (optional)
-  max_filesize: 1048576 # Max file size in bytes (default 1Mb)
+  max_filesize: 1048576 # Max file size uploads in bytes (default 1Mb)
 
   # Multiply the below options by the number of instances for total counts.
   connections: 50       # Number of connections allowed to server
