@@ -22,13 +22,13 @@ class Codely::Cmd
     resp =
       case options[:action]
       when :get
-        cl.get options[:id]
+        cl.get options[:paste_id]
       when :create
         cl.paste_url cl.create(options.delete(:data), options)
       when :delete
-        cl.delete options[:id]
+        cl.delete options[:paste_id]
       when :update
-        cl.paste_url cl.update(options.delete(:id), options)
+        cl.paste_url cl.update(options.delete(:paste_id), options)
       end
 
     puts resp
@@ -152,7 +152,7 @@ Make and edit Codely pastes.
       options[:action] = options[:paste_id] ? :update : :create
     end
 
-    if !options[:data] && !options[:id]
+    if !options[:data] && !options[:paste_id]
       $stderr.puts "\nPlease specify a data source or paste ID."
       puts opts
       exit 1
