@@ -4,17 +4,29 @@ require 'rainbows'
 
 class Codely::Server
 
-  def self.start opts=nil
-    opts ||= Codely::DEFAULT_CONFIG['server']
+  class Error < RuntimeError; end
+
+
+  def self.start opts={}
+    host = opts.delete(:host) || "localhost:70741"
+    server = new host, opts
   end
 
 
-  def self.stop
+  def self.stop opts={}
     
   end
 
 
-  def self.restart
+  def self.restart opts={}
     
+  end
+
+
+  attr_reader :host, :status
+
+  def initialize host, opts={}
+    @host = host
+    @status = 'unknown status'
   end
 end

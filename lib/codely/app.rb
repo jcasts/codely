@@ -2,6 +2,9 @@ require 'codely'
 require 'sinatra'
 require 'cgi'
 
+require 'codely/db'
+Codely::DB.setup
+
 class Codely::App < Sinatra::Application
   require 'codely/paste'
 

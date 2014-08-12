@@ -1,7 +1,4 @@
-require 'data_mapper'
 require 'digest/md5'
-
-DataMapper.setup(:default, 'sqlite:///Users/jcastagna/codely/data.db')
 
 class Codely::Paste
 
@@ -67,6 +64,3 @@ class Codely::Paste
     self.lang = name
   end
 end
-
-DataMapper.finalize
-DataMapper.auto_upgrade!

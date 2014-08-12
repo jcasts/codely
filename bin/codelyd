@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$: << File.join(File.dirname(__FILE__), "../lib") if $0 == "bin/codely"
+$: << File.join(File.dirname(__FILE__), "../lib") if $0 == "bin/codelyd"
 
 require 'codely/cmd'
 Codely::Cmd.run_server

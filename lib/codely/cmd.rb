@@ -4,6 +4,8 @@ require 'yaml'
 
 class Codely::Cmd
 
+  class Error < RuntimeError; end
+
   SERVER_CONFIG_FILE = File.expand_path "~/.codelyd"
   SERVER_DEFAULT_CONFIG = {
     "host"         => "0.0.0.0:70741",
@@ -11,7 +13,7 @@ class Codely::Cmd
     "instances"    => 1,
     "connections"  => 50,
     "threads"      => 10,
-    "max_filesize" => 1048576
+    "max_file_mb"  => 1
   }
 
   CLIENT_CONFIG_FILE = File.expand_path "~/.codely"
@@ -43,12 +45,43 @@ class Codely::Cmd
     puts resp
 
   rescue Codely::Client::Error => e
-    $stderr.puts "ERROR: #{e.message}"
-    exit 1
+    error_and_exit! e.message
   end
 
 
+  ##
+  # Main entry point for running the Codely server daemon.
+
   def self.run_server argv=ARGV
+    require 'codely/server'
+    options = parse_server_argv argv
+
+    server =
+      case options[:action]
+      when 'start'
+        require 'codely/db'
+        puts "Preparing DB"
+        Codely::DB.setup
+        puts "Starting Codely daemon..."
+        Codely::Server.start options
+
+      when 'stop'
+        puts "Stopping Codely daemon..."
+        Codely::Server.stop options
+
+      when 'restart'
+        puts "Restarting Codely daemon..."
+        Codely::Server.restart options
+      end
+
+    puts "Codely server #{server.status} on socket #{server.host}"
+
+  rescue Codely::Server::Error => e
+    error_and_exit! e.message
+  end
+
+
+  def self.parse_server_argv argv
     options = {}
 
     opts = OptionParser.new do |opt|
@@ -75,12 +108,48 @@ Codely server daemon.
   Options:
         STR
 
-      opt.on('-h', '--host STR', 'Socket to bind to <host[:port]>') do |val|
-        
+      opt.on('-h', '--host STR',
+        'TCP/Unix socket to bind to <host[:port]>') do |val|
+        options[:host] = val
+      end
+
+      opt.on('-p', '--pid PATH', 'Path to pid file') do |val|
+        options[:pid] = val
+      end
+
+      opt.on('-c', '--config PATH', 'Path to config file') do |val|
+        options[:config_path] = val
+      end
+
+      opt.on('-?', '--help', 'Show this screen') do
+        puts opt
+        exit
+      end
+
+      opt.on('-v', '--version', 'Show version and exit') do
+        puts Codely::VERSION
+        exit
       end
     end
 
     opts.parse! argv
+
+    options[:action] = argv.shift
+
+    unless options[:action]
+      $stderr.puts "\nPlease specify an action to perform."
+      puts opts
+      exit 1
+    end
+
+    raise Error, "Unknown action `#{options[:action]}'" unless
+      %w{start stop restart}.include?(options[:action])
+
+    options
+
+  rescue Error, OptionParser::ParseError => e
+    error_and_exit! "#{e.message}
+Use #{opts.program_name} --help for usage info."
   end
 
 
@@ -181,8 +250,7 @@ Make and edit Codely pastes.
         filepath = argv.pop
         options[:data] = File.open(filepath, "rb")
       rescue => e
-        $stderr.puts "ERROR: Could not open file #{filepath}"
-        exit 1
+        error_and_exit! "Could not open file #{filepath}"
       end
     end
 
@@ -201,10 +269,9 @@ Make and edit Codely pastes.
     options[:action] ||= :get
     options
 
-  rescue OptionParser::ParseError => e
-    $stderr.puts "ERROR: #{e.message}
+  rescue Error, OptionParser::ParseError => e
+    error_and_exit! "#{e.message}
 Use #{opts.program_name} --help for usage info."
-    exit 1
   end
 
 
@@ -215,27 +282,33 @@ Use #{opts.program_name} --help for usage info."
 
     if options[:show_hosts]
       puts config['hosts'].map{|key, val| "#{key}:\t\t#{val}"}.join("\n")
-      write_yml_and_exit config_file, config
+      write_yml_and_exit! config_file, config
 
     elsif options[:save_host]
-      raise OptionParser::ParseError, "Specify a host with -h to save alias" if
+      raise Error, "Specify a host with -h to save alias" if
         !options[:host]
       config['hosts'][options[:save_host]] = options[:host]
       puts "Writing #{options[:save_host]} to config..."
-      write_yml_and_exit config_file, config
+      write_yml_and_exit! config_file, config
 
     elsif options[:del_host]
       config['hosts'].delete(options[:del_host])
       puts "Removing #{options[:del_host]} from config..."
-      write_yml_and_exit config_file, config
+      write_yml_and_exit! config_file, config
     end
 
     config
   end
 
 
-  def self.write_yml_and_exit path, data
+  def self.write_yml_and_exit! path, data
     File.open(path, "w"){|f| f.write data.to_yaml }
     exit
+  end
+
+
+  def self.error_and_exit! msg, code=1
+    $stderr.puts "ERROR: #{msg}"
+    exit 1
   end
 end
